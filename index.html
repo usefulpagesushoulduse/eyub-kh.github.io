@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convertidor de Link a QR | Gratis y Rápido</title>
+  <meta name="description" content="Convierte cualquier enlace a código QR gratis en segundos. Sin registro, sin límites.">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ======================================================
+       ESPACIO PARA GOOGLE ADSENSE - Pon aquí tu código de AdSense
+       cuando lo tengas aprobado. Por ahora está vacío.
+       ====================================================== -->
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --border: #2e2e3a;
+      --accent: #7c6af7;
+      --accent2: #5af0c4;
+      --text: #e8e8f0;
+      --muted: #8888a0;
+      --radius: 16px;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── BANNER SUPERIOR DE ANUNCIO ── */
+    .ad-banner-top {
+      width: 100%;
+      max-width: 728px;
+      min-height: 90px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+    /* Cuando tengas AdSense, reemplaza el contenido de .ad-banner-top */
+
+    header {
+      text-align: center;
+      padding: 52px 20px 32px;
+    }
+
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    main {
+      width: 100%;
+      max-width: 700px;
+      padding: 0 20px;
+    }
+
+    /* ── CARD CENTRAL ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 28px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .input-group input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus { border-color: var(--accent); }
+    .input-group input::placeholder { color: var(--muted); }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.97); }
+
+    /* ── RESULTADO QR ── */
+    #result {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    #result.visible { display: flex; }
+
+    #qr-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    #qr-container img, #qr-container canvas {
+      display: block;
+      width: 220px;
+      height: 220px;
+    }
+
+    .download-btn {
+      background: transparent;
+      border: 1.5px solid var(--accent2);
+      color: var(--accent2);
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: rgba(90,240,196,0.1); }
+
+    /* ── ANUNCIO LATERAL / CUADRADO ── */
+    .ad-square {
+      width: 100%;
+      min-height: 250px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+    /* Cuando tengas AdSense, reemplaza el contenido de .ad-square */
+
+    /* ── SECCIÓN DE INSTRUCCIONES (buen para SEO) ── */
+    .how-to {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+
+    .how-to h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+
+    .step p { color: var(--muted); line-height: 1.5; font-size: 0.95rem; }
+    .step p strong { color: var(--text); }
+
+    /* ── ANUNCIO INFERIOR ── */
+    .ad-banner-bottom {
+      width: 100%;
+      min-height: 90px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+
+    footer {
+      padding: 24px 20px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    /* ── MENSAJE DE ERROR ── */
+    #error-msg {
+      display: none;
+      color: #f07070;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+    #error-msg.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- ANUNCIO SUPERIOR (728x90 leaderboard) -->
+  <div class="ad-banner-top">
+    <!-- Pega aquí el código de Google AdSense cuando lo apruebes -->
+    PUBLICIDAD
+  </div>
+
+  <header>
+    <h1>Link → QR</h1>
+    <p>Convierte cualquier enlace a código QR gratis en segundos</p>
+  </header>
+
+  <main>
+
+    <!-- HERRAMIENTA PRINCIPAL -->
+    <div class="card">
+      <div class="input-group">
+        <input type="url" id="url-input" placeholder="https://ejemplo.com" autocomplete="off" />
+        <button class="btn" onclick="generateQR()">Generar QR</button>
+      </div>
+      <p id="error-msg">Por favor introduce una URL válida (empieza por https://)</p>
+
+      <div id="result">
+        <div id="qr-container">
+          <img id="qr-img" src="" alt="Código QR generado" />
+        </div>
+        <button class="download-btn" onclick="downloadQR()">⬇ Descargar QR</button>
+      </div>
+    </div>
+
+    <!-- ANUNCIO CUADRADO (300x250) -->
+    <div class="ad-square">
+      <!-- Pega aquí el código de Google AdSense cuando lo apruebes -->
+      PUBLICIDAD
+    </div>
+
+    <!-- INSTRUCCIONES (ayuda al SEO) -->
+    <div class="how-to">
+      <h2>¿Cómo usar el conversor?</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p><strong>Pega tu enlace</strong> — Copia cualquier URL (de una web, red social, tienda online, etc.) y pégala en el campo de arriba.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p><strong>Pulsa "Generar QR"</strong> — En menos de un segundo aparecerá tu código QR listo para usar.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p><strong>Descarga o comparte</strong> — Haz clic en "Descargar QR" para guardar la imagen y usarla donde quieras.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANUNCIO INFERIOR (728x90) -->
+    <div class="ad-banner-bottom">
+      <!-- Pega aquí el código de Google AdSense cuando lo apruebes -->
+      PUBLICIDAD
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2025 Link a QR — Herramienta gratuita
+  </footer>
+
+  <!-- Librería QR (gratuita, sin backend) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    let qrInstance = null;
+
+    function isValidURL(str) {
+      try { new URL(str); return true; }
+      catch { return false; }
+    }
+
+    function generateQR() {
+      const input = document.getElementById('url-input').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+      const result = document.getElementById('result');
+      const container = document.getElementById('qr-container');
+
+      if (!input || !isValidURL(input)) {
+        errorMsg.classList.add('visible');
+        result.classList.remove('visible');
+        return;
+      }
+
+      errorMsg.classList.remove('visible');
+
+      // Limpiar QR anterior
+      container.innerHTML = '';
+
+      // Generar nuevo QR
+      qrInstance = new QRCode(container, {
+        text: input,
+        width: 220,
+        height: 220,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      result.classList.add('visible');
+    }
+
+    function downloadQR() {
+      const container = document.getElementById('qr-container');
+      const canvas = container.querySelector('canvas');
+      const img = container.querySelector('img');
+
+      if (canvas) {
+        const link = document.createElement('a');
+        link.download = 'codigo-qr.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } else if (img) {
+        const link = document.createElement('a');
+        link.download = 'codigo-qr.png';
+        link.href = img.src;
+        link.click();
+      }
+    }
+
+    // Generar con Enter
+    document.getElementById('url-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') generateQR();
+    });
+  </script>
+</body>
+</html>
