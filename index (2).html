@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link to QR Code Converter | Free & Instant</title>
+  <meta name="description" content="Convert any link to a QR code for free in seconds. No registration, no limits.">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --border: #2e2e3a;
+      --accent: #7c6af7;
+      --accent2: #5af0c4;
+      --text: #e8e8f0;
+      --muted: #8888a0;
+      --radius: 16px;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── ADS ── */
+    .ad-banner-top {
+      width: 100%;
+      max-width: 728px;
+      min-height: 90px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .ad-square {
+      width: 100%;
+      min-height: 250px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+
+    .ad-banner-bottom {
+      width: 100%;
+      min-height: 90px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+
+    /* ── LAYOUT ── */
+    header {
+      text-align: center;
+      padding: 52px 20px 32px;
+    }
+
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    main {
+      width: 100%;
+      max-width: 700px;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 28px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .input-group input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus { border-color: var(--accent); }
+    .input-group input::placeholder { color: var(--muted); }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── LOADING OVERLAY ── */
+    #loading-overlay {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    #loading-overlay.visible { display: flex; }
+
+    .loading-label {
+      font-size: 0.95rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.12s linear;
+    }
+
+    .progress-pct {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .loading-messages {
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-height: 20px;
+      text-align: center;
+    }
+
+    /* ── QR RESULT ── */
+    #result {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    #result.visible { display: flex; }
+
+    #qr-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    #qr-container img, #qr-container canvas {
+      display: block;
+      width: 220px;
+      height: 220px;
+    }
+
+    .download-btn {
+      background: transparent;
+      border: 1.5px solid var(--accent2);
+      color: var(--accent2);
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: rgba(90,240,196,0.1); }
+
+    /* ── HOW TO ── */
+    .how-to {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+
+    .how-to h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 16px; align-items: flex-start; }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+
+    .step p { color: var(--muted); line-height: 1.5; font-size: 0.95rem; }
+    .step p strong { color: var(--text); }
+
+    footer {
+      padding: 24px 20px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    #error-msg {
+      display: none;
+      color: #f07070;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+    #error-msg.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- AD 1 — Top leaderboard (728x90) -->
+  <div class="ad-banner-top">
+    <!-- Paste Google AdSense code here -->
+    ADVERTISEMENT
+  </div>
+
+  <header>
+    <h1>Link → QR</h1>
+    <p>Convert any link to a QR code for free in seconds</p>
+  </header>
+
+  <main>
+
+    <!-- TOOL CARD -->
+    <div class="card">
+      <div class="input-group">
+        <input type="url" id="url-input" placeholder="https://example.com" autocomplete="off" />
+        <button class="btn" id="gen-btn" onclick="startGenerate()">Generate QR</button>
+      </div>
+      <p id="error-msg">Please enter a valid URL (must start with https://)</p>
+
+      <!-- LOADING SCREEN -->
+      <div id="loading-overlay">
+        <div class="progress-pct" id="pct-label">0%</div>
+        <div class="progress-wrap" style="width:100%">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="loading-messages" id="loading-msg">Generating your QR code...</div>
+      </div>
+
+      <!-- RESULT -->
+      <div id="result">
+        <div id="qr-container"></div>
+        <button class="download-btn" onclick="downloadQR()">⬇ Download QR</button>
+      </div>
+    </div>
+
+    <!-- AD 2 — Square (300x250) -->
+    <div class="ad-square">
+      <!-- Paste Google AdSense code here -->
+      ADVERTISEMENT
+    </div>
+
+    <div class="how-to">
+      <h2>How to use it?</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p><strong>Paste your link</strong> — Copy any URL (website, social media, online store, etc.) and paste it in the field above.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p><strong>Click "Generate QR"</strong> — Your QR code will appear in less than a second, ready to use.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p><strong>Download or share</strong> — Click "Download QR" to save the image and use it anywhere you want.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AD 3 — Mid rectangle (728x90) -->
+    <div class="ad-banner-bottom">
+      <!-- Paste Google AdSense code here -->
+      ADVERTISEMENT
+    </div>
+
+    <!-- AD 4 — Square (300x250) -->
+    <div class="ad-square">
+      <!-- Paste Google AdSense code here -->
+      ADVERTISEMENT
+    </div>
+
+    <!-- AD 5 — Bottom leaderboard (728x90) -->
+    <div class="ad-banner-bottom">
+      <!-- Paste Google AdSense code here -->
+      ADVERTISEMENT
+    </div>
+
+  </main>
+
+  <footer>&copy; 2025 Link to QR — Free tool</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const messages = [
+      "Generating your QR code...",
+      "Optimizing readability...",
+      "Applying error correction...",
+      "Almost there...",
+      "Finalizing your QR code...",
+      "Just a moment..."
+    ];
+
+    function isValidURL(str) {
+      try { new URL(str); return true; }
+      catch { return false; }
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function startGenerate() {
+      const input = document.getElementById('url-input').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+      const result = document.getElementById('result');
+      const loading = document.getElementById('loading-overlay');
+      const container = document.getElementById('qr-container');
+      const btn = document.getElementById('gen-btn');
+
+      if (!input || !isValidURL(input)) {
+        errorMsg.classList.add('visible');
+        return;
+      }
+
+      errorMsg.classList.remove('visible');
+      result.classList.remove('visible');
+      container.innerHTML = '';
+      btn.disabled = true;
+
+      // Show loading
+      loading.classList.add('visible');
+      resetProgress();
+
+      // --- Step 1: measure real QR generation time ---
+      const t0 = performance.now();
+      new QRCode(container, {
+        text: input,
+        width: 220,
+        height: 220,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+      const realMs = performance.now() - t0;
+
+      // --- Step 2: total fake duration = realMs + 7000ms ---
+      const totalMs = realMs + 7000;
+
+      // --- Step 3: animate progress bar ---
+      await animateProgress(totalMs);
+
+      // --- Step 4: show result ---
+      loading.classList.remove('visible');
+      result.classList.add('visible');
+      btn.disabled = false;
+    }
+
+    function resetProgress() {
+      setProgress(0);
+      document.getElementById('loading-msg').textContent = messages[0];
+    }
+
+    function setProgress(pct) {
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('pct-label').textContent = Math.floor(pct) + '%';
+    }
+
+    async function animateProgress(totalMs) {
+      /*
+        Phases (proportional to totalMs):
+        0–70%   → smooth fill over 60% of totalMs
+        70–99%  → slower fill over 35% of totalMs
+        99%     → deliberate pause: 1800ms
+        99–100% → snap to 100% over 200ms
+      */
+      const phase1End = 70;   // target %
+      const phase1Time = totalMs * 0.60;
+
+      const phase2End = 99;
+      const phase2Time = totalMs * 0.35;
+
+      const pauseAt99 = 1800;  // ms to hold at 99%
+
+      const fps = 60;
+      const interval = 1000 / fps;
+
+      // Phase 1: 0 → 70
+      await animatePhase(0, phase1End, phase1Time, interval, 0);
+
+      // Phase 2: 70 → 99
+      await animatePhase(phase1End, phase2End, phase2Time, interval, 3);
+
+      // Hold at 99%
+      setProgress(99);
+      document.getElementById('loading-msg').textContent = messages[4];
+      await sleep(pauseAt99);
+
+      // Phase 3: 99 → 100
+      setProgress(100);
+      document.getElementById('loading-msg').textContent = messages[5];
+      await sleep(200);
+    }
+
+    async function animatePhase(fromPct, toPct, durationMs, interval, msgIndex) {
+      const steps = Math.ceil(durationMs / interval);
+      const delta = (toPct - fromPct) / steps;
+      let current = fromPct;
+
+      for (let i = 0; i < steps; i++) {
+        current = Math.min(current + delta, toPct);
+        setProgress(current);
+
+        // Cycle through messages as progress moves
+        const msgI = msgIndex + Math.floor((i / steps) * 2);
+        const safeIdx = Math.min(msgI, messages.length - 1);
+        document.getElementById('loading-msg').textContent = messages[safeIdx];
+
+        await sleep(interval);
+      }
+      setProgress(toPct);
+    }
+
+    function downloadQR() {
+      const container = document.getElementById('qr-container');
+      const canvas = container.querySelector('canvas');
+      const img = container.querySelector('img');
+
+      if (canvas) {
+        const link = document.createElement('a');
+        link.download = 'qr-code.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } else if (img) {
+        const link = document.createElement('a');
+        link.download = 'qr-code.png';
+        link.href = img.src;
+        link.click();
+      }
+    }
+
+    document.getElementById('url-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') startGenerate();
+    });
+  </script>
+</body>
+</html>
